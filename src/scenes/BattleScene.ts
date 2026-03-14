@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT, COLORS, HINT_AFTER_WRONG } from '../config.ts';
+import { GAME_WIDTH, GAME_HEIGHT, COLORS, HINT_AFTER_WRONG, RUMI_MAX_HEARTS } from '../config.ts';
 import { HEROES } from '../data/heroes.ts';
 import { DEMON_TYPES } from '../data/demons.ts';
 import { STAGES } from '../data/stages.ts';
@@ -11,7 +11,7 @@ import { ComboMeter } from '../ui/ComboMeter.ts';
 import { generateProblem } from '../math/ProblemGenerator.ts';
 import { playAttackSequence, playDodgeAnimation, playDefeatAnimation } from '../effects/AttackAnimations.ts';
 import { checkAndPlayCombo } from '../effects/ComboEffects.ts';
-import { floatingText } from '../effects/ScreenEffects.ts';
+import { floatingText, screenShake } from '../effects/ScreenEffects.ts';
 import { AudioManager } from '../audio/AudioManager.ts';
 import type { MusicEngine } from '../audio/MusicEngine.ts';
 import type { MathProblem } from '../math/types.ts';
@@ -37,6 +37,10 @@ export class BattleScene extends Phaser.Scene {
   private currentProblem!: MathProblem;
   private isAnimating = false;
 
+  // Hearts system
+  private hearts = RUMI_MAX_HEARTS;
+  private heartDisplays: Phaser.GameObjects.Text[] = [];
+
   private particleKeys = ['particle-pink', 'particle-cyan', 'particle-purple', 'particle-gold'];
 
   constructor() {
@@ -59,12 +63,15 @@ export class BattleScene extends Phaser.Scene {
     this.wrongCount = 0;
     this.totalWrong = 0;
     this.isAnimating = false;
+    this.hearts = RUMI_MAX_HEARTS;
+    this.heartDisplays = [];
 
     // Setup
     this.cameras.main.setBackgroundColor(this.stageData.bgColor);
     this.setupAudio();
     this.drawBackground();
     this.setupUI();
+    this.setupHearts();
     this.spawnHero();
     this.spawnNextDemon();
 
@@ -81,22 +88,14 @@ export class BattleScene extends Phaser.Scene {
   }
 
   private drawBackground(): void {
-    // Stage background with gradient effect
     const bg = this.add.graphics();
-
-    // Base gradient
     bg.fillStyle(this.stageData.bgColor, 1);
     bg.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
-
-    // Ground
     bg.fillStyle(0x000000, 0.3);
     bg.fillRect(0, GAME_HEIGHT - 120, GAME_WIDTH, 120);
-
-    // Stage accent glow
     bg.fillStyle(this.stageData.bgAccent, 0.05);
     bg.fillCircle(GAME_WIDTH / 2, GAME_HEIGHT / 2, 300);
 
-    // Ambient sparkles
     for (let i = 0; i < 15; i++) {
       const x = Math.random() * GAME_WIDTH;
       const y = Math.random() * (GAME_HEIGHT - 150);
@@ -104,25 +103,21 @@ export class BattleScene extends Phaser.Scene {
         fontSize: `${8 + Math.random() * 8}px`,
         color: '#ffffff',
       }).setAlpha(0.2 + Math.random() * 0.3);
-
       this.tweens.add({
-        targets: star,
-        alpha: 0.1,
+        targets: star, alpha: 0.1,
         duration: 1000 + Math.random() * 2000,
-        yoyo: true,
-        repeat: -1,
-        ease: 'Sine.easeInOut',
+        yoyo: true, repeat: -1, ease: 'Sine.easeInOut',
       });
     }
 
-    // Stage name
-    const stageName = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 20, this.stageData.name, {
+    // Stage name and number
+    const stageIndex = this.registry.get('currentStage') || 0;
+    this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 20, `Stage ${stageIndex + 1}: ${this.stageData.name}`, {
       fontFamily: 'Bubblegum Sans, Comic Sans MS, cursive',
       fontSize: '18px',
       color: '#666666',
     }).setOrigin(0.5).setDepth(1);
 
-    // Demon counter
     this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 45, `Demons: ${this.stageData.demonIds.length}`, {
       fontFamily: 'Bubblegum Sans, Comic Sans MS, cursive',
       fontSize: '16px',
@@ -134,6 +129,71 @@ export class BattleScene extends Phaser.Scene {
     this.answerButtons = new AnswerButtons(this);
     this.problemDisplay = new ProblemDisplay(this);
     this.comboMeter = new ComboMeter(this);
+  }
+
+  private setupHearts(): void {
+    // Draw hearts in upper-left area (below score)
+    for (let i = 0; i < RUMI_MAX_HEARTS; i++) {
+      const heart = this.add.text(20 + i * 36, 52, '❤️', {
+        fontSize: '28px',
+      }).setDepth(80);
+      this.heartDisplays.push(heart);
+    }
+  }
+
+  private loseHeart(): void {
+    this.hearts--;
+
+    // Animate the lost heart
+    const heartIndex = this.hearts; // after decrement, this points to the heart being lost
+    if (this.heartDisplays[heartIndex]) {
+      const heart = this.heartDisplays[heartIndex];
+      // Break animation: scale up, turn grey, fade
+      this.tweens.add({
+        targets: heart,
+        scaleX: 1.5,
+        scaleY: 1.5,
+        duration: 150,
+        yoyo: true,
+        onComplete: () => {
+          heart.setText('🖤');
+          this.tweens.add({
+            targets: heart,
+            alpha: 0.3,
+            duration: 300,
+          });
+        },
+      });
+    }
+
+    // Screen shake for impact
+    screenShake(this, 100, 0.01);
+
+    // Hero flinch
+    this.tweens.add({
+      targets: this.hero.container,
+      x: this.hero.container.x - 15,
+      duration: 80,
+      yoyo: true,
+      ease: 'Power2',
+    });
+
+    // Check game over
+    if (this.hearts <= 0) {
+      this.time.delayedCall(600, () => {
+        this.gameOver();
+      });
+    }
+  }
+
+  private gameOver(): void {
+    const music: MusicEngine = this.registry.get('musicEngine');
+    if (music) music.stop();
+
+    this.cameras.main.fadeOut(500, 0, 0, 0);
+    this.time.delayedCall(500, () => {
+      this.scene.start('GameOverScene');
+    });
   }
 
   private spawnHero(): void {
@@ -150,11 +210,9 @@ export class BattleScene extends Phaser.Scene {
     const demonId = this.stageData.demonIds[this.currentDemonIndex];
     const demonData = DEMON_TYPES.find((d) => d.id === demonId) || DEMON_TYPES[0];
 
-    // Demon entrance from right
     this.demon = new Demon(this, GAME_WIDTH + 100, 380, demonData);
     this.demon.setDepth(10);
 
-    // Slide in
     this.tweens.add({
       targets: this.demon.container,
       x: 700,
@@ -167,7 +225,6 @@ export class BattleScene extends Phaser.Scene {
       },
     });
 
-    // Update counter text
     const counterText = `${this.currentDemonIndex + 1}/${this.stageData.demonIds.length}`;
     floatingText(this, GAME_WIDTH / 2, 50, counterText, '#888888', 20);
   }
@@ -189,35 +246,26 @@ export class BattleScene extends Phaser.Scene {
     if (this.isAnimating) return;
     this.isAnimating = true;
 
-    // Update state
     this.streak++;
     if (this.streak > this.maxStreak) this.maxStreak = this.streak;
     const points = 100 + this.streak * 25;
     this.score += points;
 
-    // Audio
     this.audioManager.correct(this.streak);
-
-    // Update UI
     this.comboMeter.update(this.streak, this.score);
     this.comboMeter.animateScore(this, points);
 
-    // Check combo
     checkAndPlayCombo(this, this.streak, this.particleKeys);
     if (this.streak === 3) this.audioManager.combo();
     if (this.streak === 5) this.audioManager.superCombo();
     if (this.streak === 10) this.audioManager.superCombo();
 
-    // Clear buttons
     this.answerButtons.clear();
 
-    // Pick random particle key based on hero color
     const particleKey = this.particleKeys[Math.floor(Math.random() * this.particleKeys.length)];
 
-    // Attack animation — character-specific based on weapon
     this.audioManager.attack();
     playAttackSequence(this, this.hero.container, this.demon.container, particleKey, () => {
-      // Damage demon
       this.demon.takeDamage();
 
       if (this.demon.isDefeated()) {
@@ -227,7 +275,6 @@ export class BattleScene extends Phaser.Scene {
           this.currentDemonIndex++;
           this.isAnimating = false;
 
-          // Pause before next demon
           this.time.delayedCall(800, () => {
             this.spawnNextDemon();
           });
@@ -248,15 +295,20 @@ export class BattleScene extends Phaser.Scene {
     this.totalWrong++;
     this.comboMeter.update(0, this.score);
 
-    // Audio
     this.audioManager.wrong();
+
+    // Lose a heart!
+    this.loseHeart();
+
+    // If game over triggered, don't continue
+    if (this.hearts <= 0) return;
 
     // Demon dodge
     playDodgeAnimation(this, this.demon.container, () => {
       floatingText(this, GAME_WIDTH / 2, 420, 'Try again!', '#FF9900', 28);
     });
 
-    // Hint after HINT_AFTER_WRONG wrong answers
+    // Hint after HINT_AFTER_WRONG wrong answers on the same problem
     if (this.wrongCount >= HINT_AFTER_WRONG) {
       this.time.delayedCall(500, () => {
         this.answerButtons.highlightCorrect(this.currentProblem.correctAnswer);
@@ -265,16 +317,14 @@ export class BattleScene extends Phaser.Scene {
   }
 
   private stageComplete(): void {
-    // Calculate stars
-    let stars = 1; // completed
-    if (this.totalWrong === 0) stars = 3; // perfect
-    else if (this.totalWrong <= 2) stars = 2; // great
+    let stars = 1;
+    if (this.totalWrong === 0) stars = 3;
+    else if (this.totalWrong <= 2) stars = 2;
 
     this.audioManager.stageComplete();
     const music: MusicEngine = this.registry.get('musicEngine');
     if (music) music.stop();
 
-    // Store results in registry
     this.registry.set('stageResult', {
       stageIndex: this.registry.get('currentStage') || 0,
       stageId: this.stageData.id,
