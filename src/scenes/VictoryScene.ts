@@ -134,17 +134,34 @@ export class VictoryScene extends Phaser.Scene {
       });
     });
 
-    // Buttons
+    // Auto-advance button
     const btnY = 520;
-    this.createButton(GAME_WIDTH / 2 - 140, btnY, 'Play Again', COLORS.primary, () => {
-      this.cameras.main.fadeOut(300);
-      this.time.delayedCall(300, () => this.scene.start('BattleScene'));
-    });
+    const nextStageIndex = result.stageIndex + 1;
+    const allComplete = nextStageIndex >= STAGES.length;
 
-    this.createButton(GAME_WIDTH / 2 + 140, btnY, 'Stages', COLORS.secondary, () => {
-      this.cameras.main.fadeOut(300);
-      this.time.delayedCall(300, () => this.scene.start('StageSelectScene'));
-    });
+    if (allComplete) {
+      // All stages beaten — big celebration!
+      this.add.text(GAME_WIDTH / 2, 470, 'ALL DEMONS SEALED!', {
+        fontFamily: 'Bubblegum Sans, Comic Sans MS, cursive',
+        fontSize: '32px',
+        color: '#FFD700',
+        fontStyle: 'bold',
+        stroke: '#000',
+        strokeThickness: 3,
+      }).setOrigin(0.5);
+
+      this.createButton(GAME_WIDTH / 2, btnY, 'Play Again!', COLORS.primary, () => {
+        this.registry.set('currentStage', 0);
+        this.cameras.main.fadeOut(300);
+        this.time.delayedCall(300, () => this.scene.start('BattleScene'));
+      });
+    } else {
+      this.createButton(GAME_WIDTH / 2, btnY, 'Next Stage!', COLORS.primary, () => {
+        this.registry.set('currentStage', nextStageIndex);
+        this.cameras.main.fadeOut(300);
+        this.time.delayedCall(300, () => this.scene.start('BattleScene'));
+      });
+    }
 
     this.cameras.main.fadeIn(400);
   }
