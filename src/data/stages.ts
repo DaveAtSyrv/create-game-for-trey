@@ -16,7 +16,7 @@ export const STAGES: StageData[] = [
     bgColor: 0x1a0a3e,
     bgAccent: 0xff6b9d,
     difficulty: 'easy',
-    demonIds: ['baby', 'baby', 'romance', 'baby', 'romance'],
+    demonIds: ['baby', 'mystery', 'romance', 'abby', 'baby'],
   },
   {
     id: 'saja-hideout',
@@ -24,7 +24,7 @@ export const STAGES: StageData[] = [
     bgColor: 0x0a0a2e,
     bgAccent: 0x7b68ee,
     difficulty: 'easy',
-    demonIds: ['romance', 'mystery', 'baby', 'mystery', 'abby'],
+    demonIds: ['romance', 'jinu', 'mystery', 'abby', 'romance'],
   },
   {
     id: 'golden-honmoon',

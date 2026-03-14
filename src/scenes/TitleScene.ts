@@ -132,9 +132,12 @@ export class TitleScene extends Phaser.Scene {
         duration: 80,
         yoyo: true,
         onComplete: () => {
+          // Skip character/stage select — Trey always wants Rumi
+          this.registry.set('selectedHero', 'rumi');
+          this.registry.set('currentStage', 0);
           this.cameras.main.fadeOut(400, 0, 0, 0);
           this.time.delayedCall(400, () => {
-            this.scene.start('CharacterSelectScene');
+            this.scene.start('BattleScene');
           });
         },
       });
