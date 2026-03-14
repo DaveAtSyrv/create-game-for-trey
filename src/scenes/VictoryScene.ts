@@ -3,6 +3,7 @@ import { GAME_WIDTH, GAME_HEIGHT, COLORS } from '../config.ts';
 import { STAGES } from '../data/stages.ts';
 import { confetti } from '../effects/ParticleEffects.ts';
 import { completeStage } from '../utils/storage.ts';
+import type { MusicEngine } from '../audio/MusicEngine.ts';
 
 interface StageResult {
   stageIndex: number;
@@ -32,6 +33,10 @@ export class VictoryScene extends Phaser.Scene {
 
     // Save progress
     completeStage(result.stageIndex, result.score, result.stars, result.stageId);
+
+    // Victory music
+    const music: MusicEngine = this.registry.get('musicEngine');
+    if (music) music.play('victory');
 
     // Confetti burst
     confetti(this, GAME_WIDTH / 2, -20, ['particle-pink', 'particle-gold', 'particle-cyan', 'particle-purple']);

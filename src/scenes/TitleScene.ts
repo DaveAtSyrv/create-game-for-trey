@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT, COLORS } from '../config.ts';
+import type { MusicEngine } from '../audio/MusicEngine.ts';
 
 export class TitleScene extends Phaser.Scene {
   constructor() {
@@ -139,6 +140,10 @@ export class TitleScene extends Phaser.Scene {
       });
     });
 
+    // Start music
+    const music: MusicEngine = this.registry.get('musicEngine');
+    if (music) music.play('title');
+
     // Mute button
     const muteBtn = this.add.text(GAME_WIDTH - 50, GAME_HEIGHT - 40, '🔊', {
       fontSize: '32px',
@@ -146,8 +151,13 @@ export class TitleScene extends Phaser.Scene {
 
     muteBtn.on('pointerdown', () => {
       const audioMgr = this.registry.get('audioManager');
+      const musicEng: MusicEngine = this.registry.get('musicEngine');
       if (audioMgr) {
         const muted = audioMgr.toggleMute();
+        if (musicEng) {
+          musicEng.toggleMute();
+          if (!muted) musicEng.play('title');
+        }
         muteBtn.setText(muted ? '🔇' : '🔊');
       }
     });

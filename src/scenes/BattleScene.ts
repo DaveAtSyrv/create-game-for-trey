@@ -13,6 +13,7 @@ import { playAttackSequence, playDodgeAnimation, playDefeatAnimation } from '../
 import { checkAndPlayCombo } from '../effects/ComboEffects.ts';
 import { floatingText } from '../effects/ScreenEffects.ts';
 import { AudioManager } from '../audio/AudioManager.ts';
+import type { MusicEngine } from '../audio/MusicEngine.ts';
 import type { MathProblem } from '../math/types.ts';
 import type { HeroData } from '../data/heroes.ts';
 import type { StageData } from '../data/stages.ts';
@@ -75,7 +76,8 @@ export class BattleScene extends Phaser.Scene {
       this.registry.set('audioManager', new AudioManager());
     }
     this.audioManager = this.registry.get('audioManager');
-    this.audioManager.startBgm();
+    const music: MusicEngine = this.registry.get('musicEngine');
+    if (music) music.play('battle');
   }
 
   private drawBackground(): void {
@@ -269,6 +271,8 @@ export class BattleScene extends Phaser.Scene {
     else if (this.totalWrong <= 2) stars = 2; // great
 
     this.audioManager.stageComplete();
+    const music: MusicEngine = this.registry.get('musicEngine');
+    if (music) music.stop();
 
     // Store results in registry
     this.registry.set('stageResult', {

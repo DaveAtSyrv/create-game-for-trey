@@ -6,6 +6,8 @@ import { CharacterSelectScene } from './scenes/CharacterSelectScene.ts';
 import { StageSelectScene } from './scenes/StageSelectScene.ts';
 import { BattleScene } from './scenes/BattleScene.ts';
 import { VictoryScene } from './scenes/VictoryScene.ts';
+import { MusicEngine } from './audio/MusicEngine.ts';
+import { AudioManager } from './audio/AudioManager.ts';
 
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -25,6 +27,13 @@ const config: Phaser.Types.Core.GameConfig = {
     BattleScene,
     VictoryScene,
   ],
+  callbacks: {
+    postBoot: (game) => {
+      // Register shared audio systems
+      game.registry.set('musicEngine', new MusicEngine());
+      game.registry.set('audioManager', new AudioManager());
+    },
+  },
 };
 
 // Load Google Fonts
