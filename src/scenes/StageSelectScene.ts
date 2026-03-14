@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT, COLORS } from '../config.ts';
 import { STAGES } from '../data/stages.ts';
 import { loadProgress } from '../utils/storage.ts';
+import type { MusicEngine } from '../audio/MusicEngine.ts';
 
 export class StageSelectScene extends Phaser.Scene {
   constructor() {
@@ -11,6 +12,10 @@ export class StageSelectScene extends Phaser.Scene {
   create(): void {
     this.cameras.main.setBackgroundColor(COLORS.background);
     const save = loadProgress();
+
+    // Music stays on 'select' from character select
+    const music: MusicEngine = this.registry.get('musicEngine');
+    if (music) music.play('select');
 
     // Title
     this.add.text(GAME_WIDTH / 2, 60, 'Choose Your Battle!', {

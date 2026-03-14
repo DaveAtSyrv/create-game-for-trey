@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT, COLORS } from '../config.ts';
 import { HEROES } from '../data/heroes.ts';
+import type { MusicEngine } from '../audio/MusicEngine.ts';
 
 export class CharacterSelectScene extends Phaser.Scene {
   constructor() {
@@ -9,6 +10,10 @@ export class CharacterSelectScene extends Phaser.Scene {
 
   create(): void {
     this.cameras.main.setBackgroundColor(COLORS.background);
+
+    // Music
+    const music: MusicEngine = this.registry.get('musicEngine');
+    if (music) music.play('select');
 
     // Title
     this.add.text(GAME_WIDTH / 2, 40, 'Choose Your HUNTR/X Member!', {
