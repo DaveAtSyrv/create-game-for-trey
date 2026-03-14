@@ -37,7 +37,7 @@ export class VictoryScene extends Phaser.Scene {
     confetti(this, GAME_WIDTH / 2, -20, ['particle-pink', 'particle-gold', 'particle-cyan', 'particle-purple']);
 
     // Victory title
-    const title = this.add.text(GAME_WIDTH / 2, 100, 'STAGE COMPLETE!', {
+    const title = this.add.text(GAME_WIDTH / 2, 100, 'DEMONS SEALED!', {
       fontFamily: 'Bubblegum Sans, Comic Sans MS, cursive',
       fontSize: '56px',
       color: '#FFD700',

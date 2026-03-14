@@ -18,12 +18,12 @@ export function checkAndPlayCombo(
 }
 
 function playCombo(scene: Phaser.Scene): void {
-  comboText(scene, 'COMBO! x3', '#FFD700');
+  comboText(scene, 'GA-JA! x3', '#FFD700');
   screenFlash(scene, 0xffd700, 100);
 }
 
 function playSuperCombo(scene: Phaser.Scene, particleKeys: string[]): void {
-  comboText(scene, 'SUPER COMBO! x5', '#FF6B9D');
+  comboText(scene, 'DONE DONE DONE! x5', '#FF6B9D');
   screenFlash(scene, 0xff6b9d, 200);
 
   // Burst particles from multiple points
@@ -49,7 +49,7 @@ function playSuperCombo(scene: Phaser.Scene, particleKeys: string[]): void {
 }
 
 function playMegaCombo(scene: Phaser.Scene, particleKeys: string[]): void {
-  comboText(scene, 'MEGA COMBO! x10', '#C44DFF');
+  comboText(scene, 'GOLDEN HONMOON! x10', '#FFD700');
   screenFlash(scene, 0xc44dff, 300);
   confetti(scene, GAME_WIDTH / 2, 0, particleKeys);
 

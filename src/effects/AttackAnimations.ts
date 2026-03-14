@@ -39,7 +39,9 @@ export function playAttackSequence(
             screenShake(scene, 150, 0.015);
             screenFlash(scene, 0xffffff, 100);
             burstAt(scene, demonX, demonY, particleKey, 40);
-            floatingText(scene, demonX, demonY - 60, 'POW!', '#FFD700', 48);
+            const hitWords = ['GA-JA!', 'DONE!', 'POW!', 'BOOM!'];
+            const hitWord = hitWords[Math.floor(Math.random() * hitWords.length)];
+            floatingText(scene, demonX, demonY - 60, hitWord, '#FFD700', 48);
 
             // Demon knockback
             scene.tweens.add({
@@ -137,7 +139,7 @@ export function playDefeatAnimation(
     duration: 800,
     ease: 'Power3',
     onComplete: () => {
-      floatingText(scene, demonContainer.x, demonContainer.y, 'DEFEATED!', '#FF6B9D', 56);
+      floatingText(scene, demonContainer.x, demonContainer.y, 'SEALED!', '#FF6B9D', 56);
       onComplete();
     },
   });
