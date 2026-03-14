@@ -6,6 +6,7 @@ import { CharacterSelectScene } from './scenes/CharacterSelectScene.ts';
 import { StageSelectScene } from './scenes/StageSelectScene.ts';
 import { BattleScene } from './scenes/BattleScene.ts';
 import { VictoryScene } from './scenes/VictoryScene.ts';
+import { GameOverScene } from './scenes/GameOverScene.ts';
 import { MusicEngine } from './audio/MusicEngine.ts';
 import { AudioManager } from './audio/AudioManager.ts';
 
@@ -26,6 +27,7 @@ const config: Phaser.Types.Core.GameConfig = {
     StageSelectScene,
     BattleScene,
     VictoryScene,
+    GameOverScene,
   ],
   callbacks: {
     postBoot: (game) => {

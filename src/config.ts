@@ -35,4 +35,5 @@ export const COMBO_THRESHOLDS = {
 } as const;
 
 export const STAGE_DEMONS = 5;
-export const HINT_AFTER_WRONG = 2;
+export const HINT_AFTER_WRONG = 3;
+export const RUMI_MAX_HEARTS = 5;
