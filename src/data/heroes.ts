@@ -4,28 +4,36 @@ export interface HeroData {
   color: number;
   accentColor: number;
   attackName: string;
+  weapon: string;
+  hairStyle: 'braid' | 'pigtails' | 'spacebuns';
 }
 
 export const HEROES: HeroData[] = [
   {
-    id: 'star',
-    name: 'Star',
-    color: 0xff6b9d,
-    accentColor: 0xffd700,
-    attackName: 'Starlight Blast',
+    id: 'rumi',
+    name: 'Rumi',
+    color: 0x9b59b6,      // purple
+    accentColor: 0xff6b9d, // pink demon marks
+    attackName: 'Saingeom Strike',
+    weapon: 'sword',
+    hairStyle: 'braid',
   },
   {
-    id: 'flash',
-    name: 'Flash',
-    color: 0x00e5ff,
-    accentColor: 0x6c3ce0,
-    attackName: 'Thunder Beat',
+    id: 'mira',
+    name: 'Mira',
+    color: 0xff1493,       // hot pink
+    accentColor: 0xff69b4, // lighter pink
+    attackName: 'Gokdo Sweep',
+    weapon: 'polearm',
+    hairStyle: 'pigtails',
   },
   {
-    id: 'beat',
-    name: 'Beat',
-    color: 0xc44dff,
-    accentColor: 0xff6b9d,
-    attackName: 'Sonic Wave',
+    id: 'zoey',
+    name: 'Zoey',
+    color: 0x2d2d2d,       // black
+    accentColor: 0xffd700, // gold
+    attackName: 'Shinkal Barrage',
+    weapon: 'knives',
+    hairStyle: 'spacebuns',
   },
 ];

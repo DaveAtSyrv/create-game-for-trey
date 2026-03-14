@@ -22,16 +22,16 @@ export class TitleScene extends Phaser.Scene {
     });
     emitter.setDepth(0);
 
-    // Title text
-    const title = this.add.text(GAME_WIDTH / 2, 180, 'K-POP\nDEMON HUNTERS!', {
+    // Title text — HUNTR/X branding
+    const title = this.add.text(GAME_WIDTH / 2, 150, 'KPOP\nDEMON HUNTERS', {
       fontFamily: 'Bubblegum Sans, Comic Sans MS, cursive',
-      fontSize: '72px',
-      color: '#FF6B9D',
+      fontSize: '68px',
+      color: '#9B59B6',
       fontStyle: 'bold',
       align: 'center',
       stroke: '#000',
       strokeThickness: 6,
-      lineSpacing: 10,
+      lineSpacing: 8,
     }).setOrigin(0.5);
 
     // Title pulse
@@ -45,15 +45,34 @@ export class TitleScene extends Phaser.Scene {
       ease: 'Sine.easeInOut',
     });
 
-    // Subtitle
-    this.add.text(GAME_WIDTH / 2, 310, 'Math Battle Arena', {
+    // HUNTR/X subtitle
+    this.add.text(GAME_WIDTH / 2, 280, 'HUNTR/X Math Arena', {
       fontFamily: 'Bubblegum Sans, Comic Sans MS, cursive',
-      fontSize: '32px',
-      color: '#00E5FF',
+      fontSize: '30px',
+      color: '#FF1493',
       fontStyle: 'bold',
       stroke: '#000',
       strokeThickness: 3,
     }).setOrigin(0.5);
+
+    // Ga-ja tagline
+    const tagline = this.add.text(GAME_WIDTH / 2, 330, 'Ga-ja, ga-ja, ga-ja!', {
+      fontFamily: 'Bubblegum Sans, Comic Sans MS, cursive',
+      fontSize: '22px',
+      color: '#FFD700',
+      fontStyle: 'bold',
+      stroke: '#000',
+      strokeThickness: 2,
+    }).setOrigin(0.5);
+
+    this.tweens.add({
+      targets: tagline,
+      alpha: 0.5,
+      duration: 1000,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut',
+    });
 
     // Start button
     const btnContainer = this.add.container(GAME_WIDTH / 2, 440);
@@ -64,7 +83,7 @@ export class TitleScene extends Phaser.Scene {
     btnBg.lineStyle(3, COLORS.white, 0.5);
     btnBg.strokeRoundedRect(-120, -35, 240, 70, 20);
 
-    const btnText = this.add.text(0, 0, 'PLAY!', {
+    const btnText = this.add.text(0, 0, 'GA-JA!', {
       fontFamily: 'Bubblegum Sans, Comic Sans MS, cursive',
       fontSize: '42px',
       color: '#ffffff',

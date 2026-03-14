@@ -15,6 +15,7 @@ export class BootScene extends Phaser.Scene {
     createParticleTexture(this, 'particle-gold', COLORS.gold);
     createParticleTexture(this, 'particle-white', COLORS.white);
     createParticleTexture(this, 'particle-green', COLORS.success);
+    createParticleTexture(this, 'particle-violet', 0x8b00ff);
     createStarTexture(this, 'star-gold', COLORS.gold);
     createStarTexture(this, 'star-pink', COLORS.primary);
 
