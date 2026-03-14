@@ -45,7 +45,7 @@ export class BattleScene extends Phaser.Scene {
 
   create(): void {
     // Get selections from registry
-    const heroId = this.registry.get('selectedHero') || 'star';
+    const heroId = this.registry.get('selectedHero') || 'rumi';
     const stageIndex = this.registry.get('currentStage') || 0;
 
     this.heroData = HEROES.find((h) => h.id === heroId) || HEROES[0];
