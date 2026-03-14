@@ -72,9 +72,10 @@ export class BattleScene extends Phaser.Scene {
 
   private setupAudio(): void {
     if (!this.registry.get('audioManager')) {
-      this.registry.set('audioManager', new AudioManager(this));
+      this.registry.set('audioManager', new AudioManager());
     }
     this.audioManager = this.registry.get('audioManager');
+    this.audioManager.startBgm();
   }
 
   private drawBackground(): void {
@@ -211,7 +212,7 @@ export class BattleScene extends Phaser.Scene {
     // Pick random particle key based on hero color
     const particleKey = this.particleKeys[Math.floor(Math.random() * this.particleKeys.length)];
 
-    // Attack animation
+    // Attack animation — character-specific based on weapon
     this.audioManager.attack();
     playAttackSequence(this, this.hero.container, this.demon.container, particleKey, () => {
       // Damage demon
@@ -236,7 +237,7 @@ export class BattleScene extends Phaser.Scene {
           this.presentProblem();
         });
       }
-    });
+    }, this.heroData.weapon);
   }
 
   private onWrongAnswer(): void {
