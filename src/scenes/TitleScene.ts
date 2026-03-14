@@ -140,9 +140,13 @@ export class TitleScene extends Phaser.Scene {
       });
     });
 
-    // Start music
+    // Start music on first click (Chrome autoplay policy blocks audio before interaction)
     const music: MusicEngine = this.registry.get('musicEngine');
-    if (music) music.play('title');
+    const startMusic = () => {
+      if (music && !music.isMuted()) music.play('title');
+      this.input.off('pointerdown', startMusic);
+    };
+    this.input.on('pointerdown', startMusic);
 
     // Mute button
     const muteBtn = this.add.text(GAME_WIDTH - 50, GAME_HEIGHT - 40, '🔊', {
